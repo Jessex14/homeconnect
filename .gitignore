@@ -1,0 +1,25 @@
+# Django and Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+.venv/
+.runtime-packages/
+.temp/
+staticfiles/
+media/
+.coverage
+htmlcov/
+
+# Local databases, logs, and downloaded runtime bundles
+work/
+*.log
+
+# Secrets and local environment files
+.env
+.env.*
+!.env.example
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+.vscode/

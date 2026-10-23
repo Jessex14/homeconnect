@@ -1,0 +1,10 @@
+.env
+.venv/
+.runtime-packages/
+__pycache__/
+*.py[cod]
+*.sqlite3
+staticfiles/
+media/
+.coverage
+htmlcov/

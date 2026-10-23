@@ -1,0 +1,23 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#172b28">
+  <meta name="description" content="A clear, secure workspace for Kenyan property operations.">
+  <link rel="manifest" href="{% static 'pwa/manifest.webmanifest' %}">
+  <link rel="icon" href="{% static 'pwa/icon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'pwa/app.css' %}?v=14">
+  <title>HomeConnect — Property workspace</title>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div id="app" aria-live="polite" data-rent-qa-enabled="{{ rent_qa_enabled|yesno:'true,false' }}">
+    <main id="main" class="loading-screen"><span class="brand-mark">H</span><p>Opening your workspace…</p></main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="{% static 'pwa/app.js' %}?v=14" defer></script>
+</body>
+</html>

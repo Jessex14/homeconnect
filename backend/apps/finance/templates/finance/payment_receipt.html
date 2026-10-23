@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Payment receipt {{ receipt_number }} · HomeConnect</title>
+  <style>
+    :root{font-family:Arial,Helvetica,sans-serif;color:#18312d;background:#f4f2ec}*{box-sizing:border-box}body{margin:0;padding:2rem}.receipt{max-width:720px;margin:0 auto;padding:2.5rem;background:#fffefa;border:1px solid #e7e4dc;border-radius:14px}.top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;border-bottom:2px solid #245c4b;padding-bottom:1.2rem}.brand{font-weight:800;color:#245c4b;letter-spacing:.02em}.top h1{font-size:1.5rem;margin:.5rem 0}.badge{padding:.45rem .65rem;border-radius:99px;background:#e6f1e9;color:#245c4b;font-size:.75rem;font-weight:700}.badge.manual{background:#fff1df;color:#725019}.badge.void{background:#fbe9e5;color:#813c32}.intro{margin:1.2rem 0;color:#61716b;line-height:1.5}.amount{margin:1.3rem 0;padding:1.2rem;background:#f4f2ec;border-radius:10px}.amount span,.row span{display:block;color:#61716b;font-size:.78rem}.amount strong{display:block;margin-top:.3rem;font-size:1.8rem}.details{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.row{padding:.8rem 0;border-bottom:1px solid #e7e4dc}.row strong{display:block;margin-top:.3rem;font-size:.92rem;overflow-wrap:anywhere}.notice{margin-top:1.2rem;padding:1rem;border-left:4px solid #d8a765;background:#fff8ed;color:#554831;line-height:1.5;font-size:.84rem}.actions{display:flex;gap:.6rem;margin-top:1.5rem}.actions button{border:0;border-radius:8px;padding:.7rem 1rem;background:#245c4b;color:white;font-weight:700;cursor:pointer}.actions a{padding:.7rem 1rem;color:#245c4b}.foot{margin-top:2rem;color:#61716b;font-size:.72rem;line-height:1.5}@media(max-width:540px){body{padding:.6rem}.receipt{padding:1.2rem}.details{grid-template-columns:1fr}.top{flex-direction:column}}@media print{body{padding:0;background:white}.receipt{max-width:none;border:0;border-radius:0;padding:0}.actions{display:none}.notice{break-inside:avoid}}
+  </style>
+</head>
+<body>
+  <main class="receipt">
+    <header class="top">
+      <div><div class="brand">HomeConnect</div><h1>Payment receipt</h1><div>Receipt {{ receipt_number }}</div></div>
+      {% if reversal %}<span class="badge void">REVERSED</span>{% elif is_provider_confirmed %}<span class="badge">M-PESA CONFIRMED</span>{% else %}<span class="badge manual">MANUAL RECORD</span>{% endif %}
+    </header>
+    <p class="intro">Payment record for {{ organization.name }} · {{ property.name }} · Unit {{ tenancy.unit.code }}.</p>
+    <section class="amount"><span>Amount recorded</span><strong>{{ payment.currency }} {{ payment.amount }}</strong></section>
+    <section class="details" aria-label="Payment details">
+      <div class="row"><span>Paid by</span><strong>{{ tenancy.tenant.email|default:tenancy.invited_email }}</strong></div>
+      <div class="row"><span>Received by</span><strong>{{ organization.name }}</strong></div>
+      <div class="row"><span>Payment date</span><strong>{{ payment.payment_date|date:"j M Y" }}</strong></div>
+      <div class="row"><span>Payment method</span><strong>{{ payment.get_method_display }}</strong></div>
+      <div class="row"><span>Reference</span><strong>{{ payment.reference|default:"—" }}</strong></div>
+      <div class="row"><span>Recorded</span><strong>{{ payment.created_at|date:"j M Y, H:i" }}</strong></div>
+      {% if provider_receipt %}<div class="row"><span>Safaricom receipt</span><strong>{{ provider_receipt }}</strong></div>{% endif %}
+      {% if payment.recorded_by %}<div class="row"><span>Recorded by</span><strong>{{ payment.recorded_by.email }}</strong></div>{% endif %}
+    </section>
+    {% if reversal %}<p class="notice">This record was reversed on {{ reversal.created_at|date:"j M Y, H:i" }}. Reason: {{ reversal.reason }}</p>{% elif is_provider_confirmed %}<p class="notice">Safaricom confirmed this M-Pesa payment. The rent balance changes only when the landlord allocates this payment to a rent charge.</p>{% else %}<p class="notice">This is a landlord-entered manual record. HomeConnect has not independently verified that money was received. The rent balance changes only when the landlord allocates this payment to a rent charge.</p>{% endif %}
+    {% if payment.notes %}<div class="row"><span>Note</span><strong>{{ payment.notes }}</strong></div>{% endif %}
+    <div class="actions"><button type="button" onclick="window.print()">Print / Save as PDF</button><a href="/">Back to HomeConnect</a></div>
+    <footer class="foot">Issued by HomeConnect on {{ issued_at|date:"j M Y, H:i" }}. This receipt records the payment information held in HomeConnect; it is not a tax invoice.</footer>
+  </main>
+</body>
+</html>
