@@ -23,3 +23,5 @@ body{min-width:0}
 .obligation-card{padding:1rem;margin:.8rem 0;background:#fbfaf5}.obligation-card h4{margin:0 0 .25rem;font:700 .95rem Manrope,"Segoe UI",sans-serif}.obligation-card>.panel-head>strong{font-size:.88rem;color:var(--green);text-align:right}.obligation-card .ticket-list{margin:.5rem 0}.obligation-card .inline-form{margin:.7rem 0}.obligation-card .tenancy-facts{margin:.7rem 0}.allocation-form,.adjustment-form{padding:.8rem;border:1px solid var(--line);border-radius:10px;background:#fffefa}
 @media(max-width:520px){.tenancy-facts{grid-template-columns:1fr}}
 .rent-qa-panel{margin-top:1rem;background:#fbfaf5}.rent-qa-panel h3{margin:.2rem 0}.rent-qa-panel .ticket-item{margin-top:.75rem}.rent-qa-panel .ticket-item span{overflow-wrap:anywhere}
+
+.danger-btn{border:1px solid #a73527;border-radius:10px;background:#a73527;color:#fff;padding:.7rem .9rem;font-size:.78rem;font-weight:700}.danger-btn:hover{background:#832b22}.listing-delete-actions{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-top:.85rem}.listing-delete-actions .subtle{margin:0}

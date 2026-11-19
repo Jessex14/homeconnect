@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal, InvalidOperation
 
 from django.db import models, transaction
@@ -14,6 +15,8 @@ from apps.organizations.permissions import can_manage_property, can_view_all_pro
 
 from .models import Building, RentalListing, RentalListingPhoto, Unit
 from .serializers import BuildingSerializer, BuildingUpdateSerializer, PropertyCreateSerializer, PropertyReadSerializer, PropertyUpdateSerializer, PublicRentalListingSerializer, RentalListingPhotoReadSerializer, RentalListingPhotoUploadSerializer, RentalListingWriteSerializer, UnitSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class OrganizationPropertyListCreateView(APIView):
@@ -230,6 +233,43 @@ class UnitRentalListingView(APIView):
         data = RentalListingWriteSerializer(listing, context={"request": request}).data
         data["exists"] = True
         return Response(data)
+
+    def delete(self, request, unit_id):
+        with transaction.atomic():
+            unit = get_object_or_404(
+                Unit.objects.select_for_update().select_related("property", "property__organization"),
+                pk=unit_id,
+            )
+            if not can_manage_property(request.user, unit.property):
+                return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+            listing = RentalListing.objects.select_for_update().filter(unit=unit).first()
+            if listing is None:
+                return Response({"detail": "Rental listing not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            photos = list(listing.photos.values_list("id", "image"))
+            record_domain_event(
+                actor=request.user,
+                organization=unit.property.organization,
+                obj=listing,
+                action="rental_listing.deleted",
+                request=request,
+                changes={
+                    "title": listing.title,
+                    "status": listing.status,
+                    "photo_ids": [str(photo_id) for photo_id, _name in photos],
+                },
+            )
+            listing.delete()
+
+        from django.core.files.storage import default_storage
+
+        for photo_id, name in photos:
+            if name:
+                try:
+                    default_storage.delete(name)
+                except Exception:
+                    logger.exception("Could not remove listing photo file after deleting photo %s", photo_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def post(self, request, unit_id):
         return self.save_listing(request, unit_id)

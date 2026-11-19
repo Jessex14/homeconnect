@@ -55,7 +55,7 @@ The PostgreSQL suite applies migrations and includes a concurrent overlapping-in
 - Tenants and authorized property staff can open and print a receipt for a payment record. Manual receipts explicitly say the payment was not independently verified; M-Pesa receipts include the Safaricom receipt when available. Receipts show reversals and do not imply that a payment has been allocated to rent.
 - M-Pesa callback routes require a public HTTPS base URL (`MPESA_CALLBACK_BASE_URL`); localhost cannot receive Safaricom callbacks. Sandbox is the default. Production requests remain disabled unless the host explicitly sets `MPESA_ALLOW_PRODUCTION=true`. Store a generated Fernet key in `MPESA_CREDENTIALS_ENCRYPTION_KEY`; changing it without re-encrypting the stored credentials makes them unreadable. In debug mode only, encryption falls back to a key derived from `DJANGO_SECRET_KEY`.
 - Daraja consumer credentials and passkeys are saved encrypted per organization and never returned to the browser. Keep the database, application secret, and encryption key protected. Do not put live credentials in `.env.example`, source control, or chat.
-- Important property, invitation and tenancy transitions are recorded in append-only domain audit events. Audit reads are not exposed as an API yet; database-level privileges/retention controls remain deployment work.
+- Important property, invitation, tenancy and rental-listing deletion transitions are recorded in append-only domain audit events. Deleting a rental listing permanently removes its advert photos while retaining the deletion event. Audit reads are not exposed as an API yet; database-level privileges/retention controls remain deployment work.
 
 ## API endpoints
 
@@ -64,6 +64,7 @@ All paths are under `/api/v1/`, require authenticated sessions except existing a
 - `GET/POST /organizations/{id}/properties`
 - `GET/POST /organizations/{id}/members`, `DELETE /organizations/{id}/members/{membership_id}`
 - `GET/PATCH /properties/{id}`, `POST /properties/{id}/archive`
+- `GET/POST/PUT/DELETE /units/{unit_id}/listing`; `DELETE` permanently removes the advert and its uploaded photos
 - `GET/POST /properties/{id}/buildings`, `GET/PATCH /buildings/{id}`
 - `GET/POST /properties/{id}/units`, `GET/PATCH /units/{id}`
 - `POST /units/{id}/invitations`
