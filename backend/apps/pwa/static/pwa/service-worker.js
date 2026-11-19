@@ -1,4 +1,4 @@
-const CACHE_NAME = "homeconnect-shell-v12";
+const CACHE_NAME = "homeconnect-shell-v13";
 const SHELL = ["/", "/static/pwa/app.css", "/static/pwa/app.js", "/static/pwa/icon.svg", "/static/pwa/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
